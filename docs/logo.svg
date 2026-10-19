@@ -1,14 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="battguard + lidguard logo">
-  <rect width="256" height="256" rx="56" fill="#111827"/>
-  <!-- crescent moon: display asleep -->
-  <circle cx="166" cy="82" r="36" fill="#fbbf24"/>
-  <circle cx="184" cy="68" r="34" fill="#111827"/>
-  <!-- closed MacBook, seen from the front -->
-  <rect x="40" y="146" width="176" height="14" rx="7" fill="#e2e8f0"/>
-  <rect x="116" y="149" width="24" height="4" rx="2" fill="#94a3b8"/>
-  <path d="M30 164 H226 L234 180 Q234 186 228 186 H28 Q22 186 22 180 Z" fill="#94a3b8"/>
-  <!-- battery badge: battguard -->
-  <rect x="92" y="202" width="60" height="28" rx="7" fill="none" stroke="#4ade80" stroke-width="4"/>
-  <rect x="154" y="210" width="7" height="12" rx="2" fill="#4ade80"/>
-  <rect x="99" y="209" width="22" height="14" rx="2" fill="#4ade80"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" aria-label="battguard + lidguard logo" role="img" viewBox="0 0 256 256"><rect width="256" height="256" fill="#111827" rx="56"/><circle cx="166" cy="82" r="36" fill="#fbbf24"/><circle cx="184" cy="68" r="34" fill="#111827"/><rect width="176" height="14" x="40" y="146" fill="#e2e8f0" rx="7"/><rect width="24" height="4" x="116" y="149" fill="#94a3b8" rx="2"/><path fill="#94a3b8" d="M30 164 H226 L234 180 Q234 186 228 186 H28 Q22 186 22 180 Z"/><rect width="60" height="28" x="92" y="202" fill="none" stroke="#4ade80" stroke-width="4" rx="7"/><rect width="7" height="12" x="154" y="210" fill="#4ade80" rx="2"/><rect width="22" height="14" x="99" y="209" fill="#4ade80" rx="2"/></svg>
