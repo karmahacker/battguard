@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" width="960" height="440" font-family="-apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif" role="img" aria-label="How lidguard and battguard work">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <rect width="960" height="440" rx="18" fill="#0f172a"/>
+  <line x1="480" y1="36" x2="480" y2="404" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- ============ lidguard ============ -->
+  <text x="40" y="58" font-size="20" font-weight="700" fill="#fbbf24">lidguard</text>
+  <text x="128" y="58" font-size="15" fill="#94a3b8">lid closed, screen off</text>
+
+  <g font-size="14" fill="#e2e8f0">
+    <!-- row 1 -->
+    <rect x="40" y="84" width="170" height="40" rx="9" fill="#1e293b" stroke="#334155"/>
+    <text x="125" y="109" text-anchor="middle">lid closes</text>
+    <line x1="214" y1="104" x2="286" y2="104" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="250" y="96" text-anchor="middle" font-size="12" fill="#94a3b8">1.5 s</text>
+    <rect x="290" y="84" width="150" height="40" rx="9" fill="#0b2a1f" stroke="#15803d"/>
+    <text x="365" y="109" text-anchor="middle" fill="#86efac">display off</text>
+
+    <!-- row 2 -->
+    <rect x="40" y="152" width="170" height="40" rx="9" fill="#1e293b" stroke="#334155"/>
+    <text x="125" y="171" text-anchor="middle">display wakes</text>
+    <text x="125" y="186" text-anchor="middle" font-size="11" fill="#94a3b8">while the lid is still closed</text>
+    <line x1="214" y1="172" x2="286" y2="172" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="250" y="164" text-anchor="middle" font-size="12" fill="#94a3b8">5 s, max 10×</text>
+    <rect x="290" y="152" width="150" height="40" rx="9" fill="#0b2a1f" stroke="#15803d"/>
+    <text x="365" y="177" text-anchor="middle" fill="#86efac">display off again</text>
+
+    <!-- row 3 -->
+    <rect x="40" y="220" width="170" height="40" rx="9" fill="#1e293b" stroke="#334155"/>
+    <text x="125" y="245" text-anchor="middle">lid opens</text>
+    <line x1="214" y1="240" x2="286" y2="240" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="250" y="232" text-anchor="middle" font-size="12" fill="#94a3b8">at once</text>
+    <rect x="290" y="220" width="150" height="40" rx="9" fill="#2a1f0b" stroke="#b45309"/>
+    <text x="365" y="245" text-anchor="middle" fill="#fcd34d">display on</text>
+
+    <!-- row 4 -->
+    <rect x="40" y="288" width="170" height="40" rx="9" fill="#1e293b" stroke="#334155"/>
+    <text x="125" y="313" text-anchor="middle">external display attached</text>
+    <line x1="214" y1="308" x2="286" y2="308" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="290" y="288" width="150" height="40" rx="9" fill="#1e293b" stroke="#334155" stroke-dasharray="5 4"/>
+    <text x="365" y="313" text-anchor="middle" fill="#94a3b8">nothing (clamshell)</text>
+  </g>
+  <text x="40" y="364" font-size="12" fill="#64748b">launchd agent in the login session · kernel clamshell notification</text>
+  <text x="40" y="382" font-size="12" fill="#64748b">pmset displaysleepnow, works unprivileged inside the session</text>
+  <text x="40" y="400" font-size="12" fill="#64748b">re-sleep cap: a wrong lid reading can never fight you for the screen</text>
+
+  <!-- ============ battguard ============ -->
+  <text x="520" y="58" font-size="20" font-weight="700" fill="#fbbf24">battguard</text>
+  <text x="624" y="58" font-size="15" fill="#94a3b8">low battery, closed-lid mode</text>
+
+  <!-- battery gauge: 400 px = 100 % -->
+  <rect x="520" y="92" width="400" height="30" rx="7" fill="#1e293b" stroke="#334155"/>
+  <rect x="522" y="94" width="356" height="26" rx="5" fill="#166534"/>
+  <rect x="878" y="94" width="20" height="26" fill="#b45309"/>
+  <path d="M898 94 H912 Q918 94 918 100 V114 Q918 120 912 120 H898 Z" fill="#b91c1c"/>
+  <rect x="924" y="100" width="6" height="14" rx="2" fill="#334155"/>
+  <g font-size="11" fill="#94a3b8">
+    <text x="522" y="138">100 %</text>
+    <text x="878" y="138" text-anchor="middle">10 %</text>
+    <text x="912" y="138" text-anchor="middle">5 %</text>
+  </g>
+
+  <g font-size="14" fill="#e2e8f0">
+    <circle cx="530" cy="178" r="7" fill="#b45309"/>
+    <text x="548" y="183">10 % … 6 %: alarm every minute</text>
+    <text x="548" y="200" font-size="12" fill="#94a3b8">notification with sound + spoken warning</text>
+
+    <circle cx="530" cy="236" r="7" fill="#b91c1c"/>
+    <text x="548" y="241">≤ 5 %: normal sleep rules back on</text>
+    <text x="548" y="258" font-size="12" fill="#94a3b8">pmset -a disablesleep 0, then pmset sleepnow if the lid is closed</text>
+
+    <circle cx="530" cy="294" r="7" fill="#15803d"/>
+    <text x="548" y="299">charger back: closed-lid mode restored</text>
+    <text x="548" y="316" font-size="12" fill="#94a3b8">pmset -a disablesleep 1, only if battguard was the one that cleared it</text>
+  </g>
+  <text x="520" y="372" font-size="12" fill="#64748b">root launchd daemon · polls pmset -g batt every 60 s</text>
+  <text x="520" y="392" font-size="12" fill="#64748b">silent when closed-lid mode is off: macOS handles low battery itself</text>
+</svg>

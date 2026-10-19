@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.png" width="128" alt="battguard + lidguard logo"></p>
+
 # battguard + lidguard
 
 Two small guards for a MacBook that runs with the lid closed.
@@ -85,6 +87,8 @@ inputs, then builds lidguard and runs its decision-logic self-test, a `--status`
 call and a short `--dry-run`. No root needed, nothing on the machine is changed.
 
 ## How it works, in short
+
+<img src="docs/how-it-works.png" width="960" alt="lidguard: lid closes, display off 1.5 s later; display wakes while closed, off again after 5 s, max 10 times; lid opens, display on; external display, nothing. battguard: 10 to 6 percent alarm every minute; 5 percent or less, disablesleep 0 and sleep if the lid is closed; charger back, disablesleep 1 restored.">
 
 - battguard is a bash script. It reads `pmset -g batt`, `pmset -g` and the
   `AppleClamshellState` from `ioreg`. Alarms are delivered into the console

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" font-family="-apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif" role="img" aria-label="battguard + lidguard">
+  <rect width="1280" height="640" fill="#0f172a"/>
+  <!-- logo, scaled -->
+  <g transform="translate(96 176) scale(1.125)">
+    <rect width="256" height="256" rx="56" fill="#111827" stroke="#1e293b" stroke-width="2"/>
+    <circle cx="166" cy="82" r="36" fill="#fbbf24"/>
+    <circle cx="184" cy="68" r="34" fill="#111827"/>
+    <rect x="40" y="146" width="176" height="14" rx="7" fill="#e2e8f0"/>
+    <rect x="116" y="149" width="24" height="4" rx="2" fill="#94a3b8"/>
+    <path d="M30 164 H226 L234 180 Q234 186 228 186 H28 Q22 186 22 180 Z" fill="#94a3b8"/>
+    <rect x="92" y="202" width="60" height="28" rx="7" fill="none" stroke="#4ade80" stroke-width="4"/>
+    <rect x="154" y="210" width="7" height="12" rx="2" fill="#4ade80"/>
+    <rect x="99" y="209" width="22" height="14" rx="2" fill="#4ade80"/>
+  </g>
+  <text x="440" y="236" font-size="64" font-weight="700" fill="#f8fafc">battguard <tspan fill="#fbbf24">+</tspan> lidguard</text>
+  <text x="440" y="292" font-size="28" fill="#94a3b8">Guards for a MacBook that runs with the lid closed</text>
+  <g font-size="24" fill="#e2e8f0">
+    <circle cx="452" cy="364" r="6" fill="#4ade80"/><text x="476" y="372">low battery: alarm, then let the Mac sleep instead of dying</text>
+    <circle cx="452" cy="420" r="6" fill="#fbbf24"/><text x="476" y="428">lid closed: screen off in seconds, not hours</text>
+    <circle cx="452" cy="476" r="6" fill="#94a3b8"/><text x="476" y="484">two launchd jobs, no dependencies, MIT</text>
+  </g>
+  <text x="440" y="560" font-size="22" fill="#64748b">pmset -a disablesleep 1  ·  github.com/karmahacker/battguard</text>
+</svg>
