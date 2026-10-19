@@ -1,0 +1,125 @@
+#!/bin/bash
+# battguard: warn when the battery gets low, then let a closed-lid Mac sleep
+# instead of dying.
+#
+# This Mac runs with `pmset -a disablesleep 1` so it keeps working with the lid
+# closed. That flag also stops macOS from sleeping when the battery is nearly
+# empty, so an unplugged Mac simply loses power. battguard is run by launchd
+# every 60 s while that flag is on:
+#
+#   battery <= WARN_AT (10%)   alarm: notification + sound + spoken warning,
+#                              repeated on every poll
+#   battery <= SLEEP_AT (5%)   `pmset -a disablesleep 0` so normal sleep rules
+#                              apply again; `pmset sleepnow` if the lid is closed
+#   charger back               `pmset -a disablesleep 1`, but only if battguard
+#                              was the one that cleared it
+#
+#   battguard            one poll (what launchd runs)
+#   battguard --status   print what it sees and exit
+#
+# Environment overrides (used by test.sh, harmless otherwise):
+#   BATTGUARD_WARN_AT / BATTGUARD_SLEEP_AT   percent, defaults 10 / 5
+#   BATTGUARD_DRY_RUN=1           print the commands instead of running them
+#   BATTGUARD_STATE_DIR / _LOG    alternative state dir / log file
+#   BATTGUARD_FAKE_BATT           text to use instead of `pmset -g batt`
+#   BATTGUARD_FAKE_SLEEPDISABLED  0/1 instead of reading `pmset -g`
+#   BATTGUARD_FAKE_LID            open/closed instead of reading ioreg
+
+set -u
+
+WARN_AT=${BATTGUARD_WARN_AT:-10}
+SLEEP_AT=${BATTGUARD_SLEEP_AT:-5}
+DRY_RUN=${BATTGUARD_DRY_RUN:-0}
+STATE_DIR=${BATTGUARD_STATE_DIR:-/var/db/battguard}
+LOG=${BATTGUARD_LOG:-/var/log/battguard.log}
+STATE_FILE="$STATE_DIR/sleep-reenabled-by-battguard"
+
+log() {
+    printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG" 2>/dev/null
+    if [ "$DRY_RUN" = 1 ]; then echo "LOG: $*"; fi
+}
+
+run() {
+    if [ "$DRY_RUN" = 1 ]; then
+        echo "RUN: $*"
+    else
+        "$@"
+    fi
+}
+
+# Notification + sound + speech in the logged-in user's session (we run as root).
+notify() {
+    local title=$1 msg=$2 user uid
+    user=$(stat -f %Su /dev/console 2>/dev/null)
+    if [ -z "$user" ] || [ "$user" = root ]; then return 0; fi
+    uid=$(id -u "$user" 2>/dev/null) || return 0
+    run launchctl asuser "$uid" sudo -u "$user" osascript -e \
+        "display notification \"$msg\" with title \"$title\" sound name \"Sosumi\""
+    run launchctl asuser "$uid" sudo -u "$user" say "$title. $msg"
+}
+
+batt_out=${BATTGUARD_FAKE_BATT:-$(pmset -g batt 2>/dev/null)}
+power_source=$(printf '%s\n' "$batt_out" | sed -n "s/.*drawing from '\([^']*\)'.*/\1/p")
+pct=$(printf '%s\n' "$batt_out" | sed -n 's/.*[[:space:]]\([0-9]\{1,3\}\)%;.*/\1/p' | head -n 1)
+
+if [ -n "${BATTGUARD_FAKE_SLEEPDISABLED+x}" ]; then
+    sleep_disabled=$BATTGUARD_FAKE_SLEEPDISABLED
+else
+    # When the flag is off, pmset -g prints no SleepDisabled line at all.
+    sleep_disabled=$(pmset -g 2>/dev/null | awk '/^ *SleepDisabled/ {print $2}')
+fi
+sleep_disabled=${sleep_disabled:-0}
+
+lid_closed() {
+    if [ -n "${BATTGUARD_FAKE_LID+x}" ]; then
+        [ "$BATTGUARD_FAKE_LID" = closed ]
+    else
+        ioreg -r -k AppleClamshellState -d 4 2>/dev/null | grep -q '"AppleClamshellState" = Yes'
+    fi
+}
+
+if [ "${1:-}" = --status ]; then
+    lid=open; lid_closed && lid=closed
+    pending=no; [ -e "$STATE_FILE" ] && pending=yes
+    printf 'power source : %s\n'  "${power_source:-unknown}"
+    printf 'battery      : %s%%\n' "${pct:-none}"
+    printf 'alarm below  : %s%%\n' "$WARN_AT"
+    printf 'sleep below  : %s%%\n' "$SLEEP_AT"
+    printf 'SleepDisabled: %s\n'  "$sleep_disabled"
+    printf 'lid          : %s\n'  "$lid"
+    printf 'restore on AC: %s\n'  "$pending"
+    exit 0
+fi
+
+# No internal battery (desktop, or readout failed): nothing to guard.
+[ -n "$pct" ] || exit 0
+
+case "$power_source" in
+    "AC Power")
+        if [ -e "$STATE_FILE" ]; then
+            run pmset -a disablesleep 1
+            rm -f "$STATE_FILE"
+            log "charger connected at ${pct}%: closed-lid mode restored (disablesleep 1)"
+        fi
+        ;;
+    "Battery Power")
+        # Only act while closed-lid mode is on; otherwise macOS handles low battery itself.
+        [ "$sleep_disabled" = 1 ] || exit 0
+        if [ "$pct" -le "$SLEEP_AT" ]; then
+            run pmset -a disablesleep 0
+            mkdir -p "$STATE_DIR" && touch "$STATE_FILE"
+            log "battery at ${pct}% (limit ${SLEEP_AT}%): normal sleep re-enabled (disablesleep 0)"
+            if lid_closed; then
+                notify "Battery ${pct}%" "Going to sleep now. Plug in the charger."
+                log "lid is closed: putting the Mac to sleep now"
+                run pmset sleepnow
+            else
+                notify "Battery ${pct}%" "Sleep re-enabled. The Mac will sleep by itself. Plug in the charger."
+            fi
+        elif [ "$pct" -le "$WARN_AT" ]; then
+            notify "Battery ${pct}%" "Plug in the charger. The Mac will go to sleep at ${SLEEP_AT} percent."
+            log "battery at ${pct}% (alarm below ${WARN_AT}%, sleep at ${SLEEP_AT}%): alarm sent"
+        fi
+        ;;
+esac
+exit 0

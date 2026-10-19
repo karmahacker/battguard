@@ -1,0 +1,5 @@
+# compiled lidguard binary (build.sh / install.sh rebuild it)
+/lidguard
+*.log
+*.err
+.DS_Store
